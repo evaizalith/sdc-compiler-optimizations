@@ -2,13 +2,28 @@ import torch
 import sys
 
 # Returns a list of all compiler optimizations
+# optsFile should be a file that contains 1 argument per line
 def getOptimizations(optsFile):
+
+    try:
+        file = open(optsFile, 'r')
+    except:
+        print("Unable to open", optsFile)
+        sys.exit()
+
     print("Reading in", optsFile)
-    return []
+    argsList = []
+    for line in file:
+        argsList.append(line)
+
+    return argsList
 
 def main():
     if len(sys.argv) == 1:
         optsFile = 'opts.txt'
+        output = 'output.txt'
+    elif len(sys.argv) == 2:
+        optsFile = sys.argv[1]
         output = 'output.txt'
 
     if torch.cuda.is_available():
