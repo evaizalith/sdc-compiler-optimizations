@@ -26,6 +26,9 @@ def main():
         optsFile = sys.argv[1]
         output = 'output.txt'
 
+    LLFI_ROOT = "~/"
+    LLVM_ROOT = "~/llvm-project/build/bin/"
+
     if torch.cuda.is_available():
         DEVICE = "cuda"
         torch.cuda.empty_cache()
