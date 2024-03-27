@@ -1,15 +1,15 @@
 import os
 
-def compileAndRun(filename, llfiRoot):
+def compileAndRun(filename, llfiRoot, llvmRoot):
     os.system('rm -rf ./llfi*')
 
     comp = "clang++ -w -emit-llvm -fno-unroll-loops -lstdc++ -fno-use-cxa-atexit -S *.cc"
     os.system(comp)
 
-    link = "llvm-link -o \"" + filename + ".ll\" -S *.ll"
+    link = llvmRoot + "llvm-link -o \"" + filename + ".ll\" -S *.ll"
     os.system(link)
 
-    opt = "\"" + filename + ".ll\" --disable-preinline -time-passes -S -o \"" + filename + ".ll\""
+    opt = llvmRoot + "opt " + "\"" + filename + ".ll\" --disable-preinline -time-passes -S -o \"" + filename + ".ll\""
     os.system(opt)
 
     instrument = llfiRoot + "/bin/instrument -lstdc++ --readable \"" + filename + ".ll\""
