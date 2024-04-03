@@ -55,27 +55,44 @@ def main():
 
     print("Device is", DEVICE)
 
-    opts = torch.tensor(getOptimizations(optsFile))
+    opts = getOptimizations(optsFile)
 
-    model = sdcModel()
+    #if exists ('trained_model.pt'):
+    #    model.load_state_dict(torch.load('trained_model.pt'))
+    #    print("Loading existing model")
+    #else:
+    #    print("No existing model found; training from scratch")
 
-    if exists ('trained_model.pt'):
-        model.load_state_dict(torch.load('trained_model.pt'))
-        print("Loading existing model")
-    else:
-        print("No existing model found; training from scratch")
+    plotScores = []
+    plotMeanScores = []
+    totalScore = 0
+    record = 0
+    agent = sdcAgent()
 
-    model = model.to(DEVICE)
+    # This part is essentially pseudocode
+    for epoch in range(100):
+        stateOld = interpretFIResults()
 
-    for epoch in range(10):
-        print("Epoch ", epoch)
+        action = agent.getAction(stateOld)
 
-        errorRate = sdcModel.train(model, dl_train, optimizer, criterion, DEVICE)
-        print("Error rate = ", errorRate)
+        selectOpts = tensorToOpts(action)
+        compileAndRun(fileName, LLFI_ROOT, LLVM_ROOT, selectOpts)
 
-        print()
+        stateNew = interpretFIResults()
 
-    torch.save(model.state_dict(), "trained_model.pt")
+        agent.trainShortMemory(stateOld, action, reward, stateNew)
+
+        agent.remember(stateOld, action, reward, stateNew)
+
+        agent.n_iterations += 1
+        agent.train_long_memory()
+
+        if sdcRate < record
+            record = sdcRate
+            agent.model.save()
+
+        print (f"Epoch {epoch}, sdcRate = {sdcRate}")
+
 
     print("All done!")
 
