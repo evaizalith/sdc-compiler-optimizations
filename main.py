@@ -1,5 +1,21 @@
 import torch
 import sys
+import matplotlib.pyplot as plt
+from IPython import display
+from model import sdcAgent
+
+def plot(scores, meanScores):
+    display.clear_output(wait=True)
+    display.display(plt.gcf())
+    plt.clf()
+    plt.title('Model Training')
+    plt.xlabel('Iterations')
+    plt.ylabel('SDC Rate')
+    plt.plot(scores)
+    plt.plot(meanScores)
+    plt.ylim(ymin=0)
+    plt.text(len(scores)-1, scores[-1], str(scores[-1]))
+    plt.text(len(meanScores)-1, meanScores[-1], str(meanScores[-1]))
 
 # Returns a list of all compiler optimizations
 # optsFile should be a file that contains 1 argument per line
@@ -16,6 +32,8 @@ def getOptimizations(optsFile):
     for line in file:
         argsList.append(line)
 
+    file.close()
+
     return argsList
 
 def main():
@@ -30,10 +48,10 @@ def main():
     LLVM_ROOT = "~/llvm-project/build/bin/"
 
     if torch.cuda.is_available():
-        DEVICE = "cuda"
+        DEVICE = torch.device("cuda")
         torch.cuda.empty_cache()
     else:
-        DEVICE = "cpu"
+        DEVICE = torch.device("cpu")
 
     print("Device is", DEVICE)
 
